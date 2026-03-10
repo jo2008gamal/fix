@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixly • Fix Any Device in 60 Seconds</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: 234 179 8;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #0a0a0a, #1f2937);
+        }
+
+        .chat-bubble {
+            animation: bubblePop 0.3s ease forwards;
+        }
+
+        @keyframes bubblePop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .step-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .result-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <!-- Navbar -->
+    <nav class="border-b border-zinc-800 bg-zinc-950 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-x-3">
+                <div class="w-9 h-9 bg-yellow-400 rounded-2xl flex items-center justify-center text-zinc-950 font-bold text-3xl leading-none logo-font">F</div>
+                <div>
+                    <span class="logo-font text-3xl font-semibold tracking-tighter text-white">fixly</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-x-8 text-sm font-medium">
+                <a href="#" onclick="scrollToSection('how')" class="hover:text-yellow-400 transition-colors">How it works</a>
+                <a href="#" onclick="scrollToSection('devices')" class="hover:text-yellow-400 transition-colors">Devices</a>
+                <a href="#" onclick="scrollToSection('chat')" class="hover:text-yellow-400 transition-colors">Live Fixer</a>
+                <button onclick="resetApp()" 
+                        class="px-6 py-2.5 bg-white text-zinc-950 rounded-3xl font-semibold text-sm flex items-center gap-x-2 hover:bg-yellow-400 transition-all active:scale-95">
+                    <i class="fas fa-redo text-xs"></i>
+                    New Problem
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-6">
+        <!-- Hero -->
+        <div class="hero-bg rounded-3xl mt-8 mb-12 overflow-hidden">
+            <div class="grid md:grid-cols-2 gap-12 items-center p-12">
+                <!-- Left side -->
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-x-2 bg-white/10 backdrop-blur-md text-yellow-300 text-xs font-medium px-4 h-7 rounded-3xl">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        WORKS ON ANY DEVICE
+                    </div>
+                    
+                    <h1 class="text-6xl leading-none font-semibold tracking-tighter logo-font text-white">
+                        Fix any device.<br>
+                        <span class="text-yellow-400">In one minute.</span>
+                    </h1>
+                    
+                    <p class="text-xl text-zinc-400 max-w-md">
+                        Tell me what's wrong with your phone, laptop, TV, router, watch — anything. 
+                        Get simple step-by-step fixes. No tech knowledge needed.
+                    </p>
+
+                    <!-- Quick device pills -->
+                    <div class="flex flex-wrap gap-2">
+                        <div onclick="quickStart('iPhone won\'t turn on')" 
+                             class="cursor-pointer bg-white/10 hover:bg-white/20 transition-colors text-sm px-5 py-2 rounded-3xl flex items-center gap-x-2">
+                            <span class="text-lg">📱</span>
+                            <span>iPhone</span>
+                        </div>
+                        <div onclick="quickStart('Samsung TV no signal')" 
+                             class="cursor-pointer bg-white/10 hover:bg-white/20 transition-colors text-sm px-5 py-2 rounded-3xl flex items-center gap-x-2">
+                            <span class="text-lg">📺</span>
+                            <span>TV</span>
+                        </div>
+                        <div onclick="quickStart('Laptop running slow')" 
+                             class="cursor-pointer bg-white/10 hover:bg-white/20 transition-colors text-sm px-5 py-2 rounded-3xl flex items-center gap-x-2">
+                            <span class="text-lg">💻</span>
+                            <span>Laptop</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <div class="bg-zinc-900 rounded-3xl p-8 shadow-2xl">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-xs uppercase tracking-widest text-zinc-500 mb-1 block">Your device</label>
+                            <input id="deviceInput" 
+                                   type="text" 
+                                   placeholder="e.g. iPhone 15, MacBook Air, Samsung TV..."
+                                   class="w-full bg-zinc-800 border border-zinc-700 focus:border-yellow-400 rounded-3xl px-6 py-4 text-lg outline-none transition-all">
+                        </div>
+                        
+                        <div>
+                            <label class="text-xs uppercase tracking-widest text-zinc-500 mb-1 block">What's wrong?</label>
+                            <textarea id="problemInput" rows="3"
+                                placeholder="Screen is black... WiFi won't connect... Battery dies in 30 minutes..."
+                                class="w-full bg-zinc-800 border border-zinc-700 focus:border-yellow-400 rounded-3xl px-6 py-4 text-lg outline-none resize-none transition-all"></textarea>
+                        </div>
+
+                        <button onclick="startTroubleshooting()"
+                                class="w-full h-16 bg-yellow-400 hover:bg-yellow-300 active:scale-[0.97] transition-all text-zinc-950 rounded-3xl font-semibold text-xl flex items-center justify-center gap-x-3 shadow-inner">
+                            <i class="fas fa-magic"></i>
+                            FIX IT NOW
+                        </button>
+
+                        <p class="text-center text-xs text-zinc-500 flex items-center justify-center gap-x-2">
+                            <i class="fas fa-shield-alt"></i>
+                            100% free • Works offline • No sign-up
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section (hidden by default) -->
+        <div id="resultsSection" class="hidden result-section mb-20">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-x-4">
+                    <div id="deviceIcon" class="w-14 h-14 bg-zinc-800 rounded-2xl flex items-center justify-center text-4xl"></div>
+                    <div>
+                        <p class="text-sm text-yellow-400">YOUR DEVICE</p>
+                        <p id="deviceName" class="text-3xl font-semibold"></p>
+                    </div>
+                </div>
+                <button onclick="resetApp()" 
+                        class="flex items-center gap-x-2 text-zinc-400 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                    <span class="text-sm font-medium">New problem</span>
+                </button>
+            </div>
+
+            <!-- Diagnosis card -->
+            <div class="bg-zinc-900 rounded-3xl p-8 mb-8">
+                <div class="flex items-center gap-x-3 mb-6">
+                    <div class="px-5 py-1 bg-green-400 text-zinc-950 text-xs font-bold rounded-3xl">DIAGNOSIS READY</div>
+                    <div id="problemSummary" class="text-zinc-400 text-lg"></div>
+                </div>
+
+                <!-- Steps -->
+                <div id="stepsContainer" class="space-y-6">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Extra help -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div onclick="showProTip()" 
+                     class="bg-zinc-900 hover:bg-zinc-800 cursor-pointer rounded-3xl p-6 transition-all step-card">
+                    <i class="fas fa-lightbulb text-yellow-400 text-3xl mb-4"></i>
+                    <h3 class="font-semibold mb-1">Pro tip</h3>
+                    <p id="proTipText" class="text-sm text-zinc-400 line-clamp-3"></p>
+                </div>
+                
+                <div onclick="copySolution()" 
+                     class="bg-zinc-900 hover:bg-zinc-800 cursor-pointer rounded-3xl p-6 transition-all step-card flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-copy text-3xl mb-4 text-zinc-400"></i>
+                    <p class="font-medium">Copy these steps</p>
+                    <p class="text-xs text-zinc-500">Send to a friend or save</p>
+                </div>
+                
+                <a href="https://www.google.com/search?q=repair+near+me" target="_blank"
+                   class="bg-zinc-900 hover:bg-zinc-800 cursor-pointer rounded-3xl p-6 transition-all step-card flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-map-marker-alt text-3xl mb-4 text-red-400"></i>
+                    <p class="font-medium">Need a pro?</p>
+                    <p class="text-xs text-zinc-500">Find repair shops nearby</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Live Chat Section -->
+        <div id="chatSection" class="mb-20">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-x-2 bg-white/5 rounded-3xl px-6 py-3">
+                    <span class="text-emerald-400">●</span>
+                    <span class="font-medium">Live Fixer Chat</span>
+                </div>
+            </div>
+            
+            <div class="max-w-2xl mx-auto bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800">
+                <!-- Chat header -->
+                <div class="bg-zinc-800 px-6 py-4 flex items-center gap-x-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-2xl flex items-center justify-center text-zinc-950 text-2xl">🛠️</div>
+                    <div>
+                        <p class="font-semibold">Fixly Assistant</p>
+                        <p class="text-xs text-emerald-400">Always online • Smart answers</p>
+                    </div>
+                </div>
+                
+                <!-- Chat messages -->
+                <div id="chatMessages" class="h-96 p-6 overflow-y-auto space-y-6 bg-zinc-950">
+                    <!-- JS populated -->
+                </div>
+                
+                <!-- Chat input -->
+                <div class="p-6 bg-zinc-900 border-t border-zinc-800">
+                    <div class="flex gap-x-3">
+                        <input id="chatInput" 
+                               onkeydown="if(event.key === 'Enter') sendChatMessage()"
+                               type="text" 
+                               placeholder="Type here... e.g. My AirPods won't pair"
+                               class="flex-1 bg-zinc-800 border border-zinc-700 focus:border-yellow-400 rounded-3xl px-6 py-4 outline-none">
+                        <button onclick="sendChatMessage()"
+                                class="w-14 h-14 bg-yellow-400 hover:bg-yellow-300 transition-all rounded-3xl flex items-center justify-center text-zinc-950">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <div id="how" class="py-20 border-t border-zinc-800">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-semibold tracking-tight">3 steps. That's it.</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-yellow-400 text-zinc-950 rounded-2xl flex items-center justify-center text-4xl mb-6">1️⃣</div>
+                    <h3 class="font-semibold text-xl mb-3">Tell us the problem</h3>
+                    <p class="text-zinc-400">Describe your device and what's wrong in plain English.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-yellow-400 text-zinc-950 rounded-2xl flex items-center justify-center text-4xl mb-6">2️⃣</div>
+                    <h3 class="font-semibold text-xl mb-3">We analyze instantly</h3>
+                    <p class="text-zinc-400">Our smart engine finds the most common (and easiest) fixes.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-yellow-400 text-zinc-950 rounded-2xl flex items-center justify-center text-4xl mb-6">3️⃣</div>
+                    <h3 class="font-semibold text-xl mb-3">Follow the steps</h3>
+                    <p class="text-zinc-400">Clear instructions. Takes 1–5 minutes. Works 90% of the time.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="py-12 text-center border-t border-zinc-800 text-xs text-zinc-500">
+            <p>Made for anyone who hates tech problems • <span class="text-yellow-400">Copy this code and run it locally</span></p>
+            <p class="mt-3">Works on phones, tablets, laptops — just save as <span class="font-mono">index.html</span></p>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-800 text-white text-sm px-6 py-3 rounded-3xl shadow-2xl flex items-center gap-x-3">
+        <i class="fas fa-check-circle text-emerald-400"></i>
+        <span id="toastText"></span>
+    </div>
+
+    <script>
+        // Tailwind script already loaded via CDN
+        function initTailwind() {
+            // No extra needed
+        }
+
+        // Simple keyword-based troubleshooter
+        const troubleshootingRules = [
+            {
+                keywords: ["turn on", "won't turn", "power", "dead", "black screen", "not starting", "boot"],
+                title: "Power / Won't Turn On",
+                icon: "🔋",
+                steps: [
+                    "1. Plug in the original charger for at least 15 minutes",
+                    "2. Try a different cable and wall adapter",
+                    "3. Hold the power button for 30 seconds (force restart)",
+                    "4. If nothing happens, check for physical damage or liquid"
+                ],
+                proTip: "Most 'dead' devices are just completely drained. Charge for 30 min before panicking!"
+            },
+            {
+                keywords: ["slow", "lag", "freezing", "crashes", "slow down"],
+                title: "Running Slow",
+                icon: "🐢",
+                steps: [
+                    "1. Close all apps and restart the device",
+                    "2. Clear cache (Settings → Storage)",
+                    "3. Update the software to latest version",
+                    "4. Delete unused apps and large files"
+                ],
+                proTip: "Restarting once a week fixes 70% of slowness issues!"
+            },
+            {
+                keywords: ["wifi", "internet", "no signal", "can't connect", "connection"],
+                title: "WiFi / Connection Problem",
+                icon: "📡",
+                steps: [
+                    "1. Toggle airplane mode on → off (30 seconds)",
+                    "2. Restart your router (unplug for 20 seconds)",
+                    "3. Forget the network and reconnect",
+                    "4. Check if other devices have the same issue"
+                ],
+                proTip: "90% of WiFi problems are solved by restarting the router!"
+            },
+            {
+                keywords: ["battery", "drains", "dying fast", "charging slow"],
+                title: "Battery Issues",
+                icon: "⚡",
+                steps: [
+                    "1. Check which apps are using the most battery",
+                    "2. Turn on Low Power / Battery Saver mode",
+                    "3. Disable background refresh for heavy apps",
+                    "4. Update the device — newer versions are more efficient"
+                ],
+                proTip: "Background apps are usually the biggest battery killers."
+            },
+            {
+                keywords: ["sound", "no audio", "volume", "speaker", "headphones"],
+                title: "No Sound",
+                icon: "🔊",
+                steps: [
+                    "1. Check if volume is up and not on mute",
+                    "2. Test with headphones or external speaker",
+                    "3. Restart the device",
+                    "4. Check Settings → Sound for any blocked apps"
+                ],
+                proTip: "Bluetooth devices sometimes stay connected in the background — disconnect them!"
+            },
+            {
+                keywords: ["overheat", "hot", "warm", "temperature"],
+                title: "Overheating",
+                icon: "🔥",
+                steps: [
+                    "1. Remove the case if it has one",
+                    "2. Close all apps and stop charging",
+                    "3. Move to a cooler place (avoid direct sun)",
+                    "4. Update software or check for rogue apps"
+                ],
+                proTip: "Never use the device while charging on a soft surface (bed, sofa)."
+            }
+        ]
+
+        function getDeviceEmoji(device) {
+            const lower = (device || "").toLowerCase()
+            if (lower.includes("phone") || lower.includes("iphone") || lower.includes("samsung")) return "📱"
+            if (lower.includes("laptop") || lower.includes("macbook") || lower.includes("pc")) return "💻"
+            if (lower.includes("tv") || lower.includes("television")) return "📺"
+            if (lower.includes("watch") || lower.includes("apple watch")) return "⌚"
+            if (lower.includes("router") || lower.includes("modem")) return "📡"
+            if (lower.includes("earbuds") || lower.includes("airpods")) return "🎧"
+            return "📟"
+        }
+
+        function startTroubleshooting() {
+            const device = document.getElementById("deviceInput").value.trim() || "Your Device"
+            const problem = document.getElementById("problemInput").value.trim().toLowerCase()
+
+            if (!problem) {
+                showToast("Please describe the problem!", true)
+                return
+            }
+
+            // Show results section
+            document.getElementById("resultsSection").classList.remove("hidden")
+            document.getElementById("resultsSection").scrollIntoView({ behavior: "smooth" })
+
+            // Fill device info
+            document.getElementById("deviceIcon").innerHTML = getDeviceEmoji(device)
+            document.getElementById("deviceName").textContent = device
+
+            // Problem summary
+            document.getElementById("problemSummary").textContent = `"${problem.substring(0, 60)}${problem.length > 60 ? '...' : ''}"`
+
+            // Find matching rule
+            let matchedRule = null
+            for (let rule of troubleshootingRules) {
+                if (rule.keywords.some(kw => problem.includes(kw))) {
+                    matchedRule = rule
+                    break
+                }
+            }
+
+            // Default rule
+            if (!matchedRule) {
+                matchedRule = {
+                    title: "General Fix",
+                    icon: "🔧",
+                    steps: [
+                        "1. Restart the device completely",
+                        "2. Check for software updates",
+                        "3. Clear cache / free up storage",
+                        "4. Try safe mode (Google your device + safe mode)",
+                        "5. If still stuck, contact the manufacturer support"
+                    ],
+                    proTip: "Restarting solves more problems than you think!"
+                }
+            }
+
+            // Render steps
+            const container = document.getElementById("stepsContainer")
+            container.innerHTML = `
+                <div class="flex items-center gap-x-3 mb-6">
+                    <span class="text-4xl">${matchedRule.icon}</span>
+                    <div>
+                        <p class="font-semibold text-2xl">${matchedRule.title}</p>
+                        <p class="text-emerald-400 text-sm">Most likely fix • Try in order</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    ${matchedRule.steps.map((step, i) => `
+                        <div class="step-card bg-zinc-800 border border-zinc-700 rounded-3xl p-6 flex gap-x-5 items-start">
+                            <div class="w-8 h-8 flex-shrink-0 bg-yellow-400 text-zinc-950 font-bold rounded-2xl flex items-center justify-center">${i+1}</div>
+                            <p class="text-lg leading-relaxed">${step}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `
+
+            // Set pro tip
+            document.getElementById("proTipText").textContent = matchedRule.proTip
+
+            // Auto open chat with first message
+            setTimeout(() => {
+                addChatMessage("assistant", `I analyzed "${problem}" for your ${device}. The steps above usually fix it. Want me to explain any step in more detail?`)
+            }, 800)
+        }
+
+        function quickStart(exampleProblem) {
+            document.getElementById("problemInput").value = exampleProblem
+            // Fake a device
+            const devices = ["iPhone 15", "Samsung Galaxy S24", "MacBook Pro", "Sony TV"]
+            document.getElementById("deviceInput").value = devices[Math.floor(Math.random()*devices.length)]
+            startTroubleshooting()
+        }
+
+        function resetApp() {
+            document.getElementById("resultsSection").classList.add("hidden")
+            document.getElementById("deviceInput").value = ""
+            document.getElementById("problemInput").value = ""
+            document.getElementById("chatMessages").innerHTML = ""
+            showToast("Ready for a new problem!")
+        }
+
+        function showProTip() {
+            showToast("Pro tip copied to clipboard! 📋")
+        }
+
+        function copySolution() {
+            const stepsText = Array.from(document.querySelectorAll("#stepsContainer p"))
+                .map(p => p.textContent.trim())
+                .join("\n")
+            
+            navigator.clipboard.writeText(stepsText).then(() => {
+                showToast("Steps copied! Send them to anyone 📲")
+            })
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast")
+            document.getElementById("toastText").innerHTML = message
+            toast.classList.remove("hidden", "bg-red-600")
+            if (isError) toast.classList.add("bg-red-600")
+            setTimeout(() => {
+                toast.classList.add("hidden")
+            }, 3000)
+        }
+
+        // Live Chat
+        let chatHistory = []
+
+        function addChatMessage(sender, text) {
+            const container = document.getElementById("chatMessages")
+            const isUser = sender === "user"
+            
+            const msgHTML = `
+                <div class="flex ${isUser ? 'justify-end' : 'justify-start'} chat-bubble">
+                    <div class="${isUser ? 'bg-yellow-400 text-zinc-950' : 'bg-zinc-800'} max-w-[75%] rounded-3xl px-6 py-4">
+                        ${text}
+                    </div>
+                </div>
+            `
+            container.innerHTML += msgHTML
+            container.scrollTop = container.scrollHeight
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById("chatInput")
+            const message = input.value.trim()
+            
+            if (!message) return
+            
+            // Add user message
+            addChatMessage("user", message)
+            
+            // Clear input
+            input.value = ""
+            
+            // Simulate thinking
+            setTimeout(() => {
+                let reply = "Got it! Let me check that for you..."
+                
+                const lowerMsg = message.toLowerCase()
+                
+                if (lowerMsg.includes("thanks") || lowerMsg.includes("thank")) {
+                    reply = "You're welcome! Glad I could help 😊 Any other device giving you trouble?"
+                } else if (lowerMsg.includes("pair") || lowerMsg.includes("bluetooth") || lowerMsg.includes("airpods")) {
+                    reply = "For pairing issues: 1) Put the device in pairing mode 2) Forget device in Bluetooth settings 3) Restart both devices. Try that?"
+                } else if (lowerMsg.includes("update")) {
+                    reply = "Software updates fix most weird problems. Go to Settings → Software Update and install everything available."
+                } else {
+                    reply = "Common fix for that: restart the device and try again. If it still happens, tell me more details!"
+                }
+                
+                addChatMessage("assistant", reply)
+            }, 900)
+        }
+
+        // Scroll helper
+        function scrollToSection(section) {
+            if (section === "chat") {
+                document.getElementById("chatSection").scrollIntoView({ behavior: "smooth" })
+            } else if (section === "how") {
+                document.getElementById("how").scrollIntoView({ behavior: "smooth" })
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            // Demo: pre-fill chat with welcome
+            setTimeout(() => {
+                const welcomeContainer = document.getElementById("chatMessages")
+                welcomeContainer.innerHTML = `
+                    <div class="flex justify-start chat-bubble">
+                        <div class="bg-zinc-800 max-w-[75%] rounded-3xl px-6 py-4">
+                            Hi! I'm Fixly's smart assistant.<br>
+                            Tell me anything — "My PS5 won't connect to WiFi" or "iPhone keeps restarting".
+                        </div>
+                    </div>
+                `
+            }, 1200)
+
+            // Keyboard support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.getElementById("problemInput") !== document.activeElement) {
+                    e.preventDefault()
+                    document.getElementById("problemInput").focus()
+                }
+            })
+
+            console.log('%c✅ Fixly website ready! Just copy this entire code into a file called index.html and open it in any browser.', 'color:#eab308; font-family:monospace')
+        }
+    </script>
+</body>
+</html>
